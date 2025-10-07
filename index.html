@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Penyamaran Sang Pendosa — Light Novel (Mobile)</title>
+
+  <!-- Fonts (system + Google fallback) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#e9f6ff;
+      --card:#ffffff;
+      --accent:#0b6fa6; /* primary ocean blue */
+      --muted:#6b7c86;
+      --glass: rgba(255,255,255,0.8);
+      --safe-pad: 20px;
+      --max-width:720px;
+      --radius:14px;
+      --transition:300ms cubic-bezier(.2,.9,.2,1);
+      --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      --font-serif: "Merriweather", Georgia, "Times New Roman", serif;
+      --font-size-base: 18px;
+      --line-height:1.65;
+    }
+
+    /* Reset + base */
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:var(--font-sans);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      background: linear-gradient(180deg,#def6ff 0%, #f7fcff 100%);
+      color:#113744;
+      padding:env(safe-area-inset);
+      display:flex;
+      justify-content:center;
+      align-items:flex-start;
+    }
+
+    /* App container */
+    .app{
+      width:100%;
+      max-width:var(--max-width);
+      padding:calc(var(--safe-pad));
+      min-height:100vh;
+    }
+
+    header.app-header{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:12px;
+    }
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .logo{
+      width:52px;height:52px;border-radius:12px;
+      display:grid;place-items:center;
+      background:linear-gradient(135deg,var(--accent),#7fd0ff);
+      color:white;font-weight:700;
+      box-shadow:0 6px 18px rgba(11,111,166,.18);
+      font-family:var(--font-serif);
+    }
+    .title{
+      font-size:15px;font-weight:700;
+      line-height:1;
+    }
+    .subtitle{font-size:12px;color:var(--muted);margin-top:2px}
+
+    /* Controls */
+    .controls{display:flex;gap:8px;align-items:center}
+    .btn{
+      background:var(--card);
+      border:none;padding:8px 10px;border-radius:9px;
+      box-shadow:0 6px 14px rgba(11,111,166,.06);
+      font-weight:600;color:var(--accent);
+      display:inline-flex;align-items:center;gap:8px;
+    }
+    .btn.ghost{background:transparent;color:var(--accent);box-shadow:none}
+    .btn.toggle {padding:6px 8px;font-size:14px}
+
+    /* TOC / Reader frame */
+    .reader{
+      background: linear-gradient(180deg, rgba(255,255,255,0.55), rgba(255,255,255,0.8));
+      border-radius:var(--radius);
+      padding:16px;
+      box-shadow:0 14px 40px rgba(2,24,45,.07);
+      min-height:60vh;
+      position:relative;
+      overflow:hidden;
+    }
+
+    /* decorative wave layers */
+    .bg-wave{
+      position:absolute;inset:0;pointer-events:none;
+      mix-blend-mode:screen;opacity:.14;
+    }
+
+    /* content column */
+    .content{
+      position:relative;
+      z-index:3;
+      max-width:760px;margin:0 auto;
+      padding-bottom:80px;
+    }
+
+    h1.book-title{
+      font-family:var(--font-serif);
+      font-size:20px;margin:0 0 6px 0;color:var(--accent);
+    }
+    p.lead{margin:0;color:var(--muted);font-size:14px}
+
+    /* chapter card */
+    article.chapter{
+      background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.85));
+      border-radius:12px;padding:18px;margin-top:14px;
+      box-shadow:0 10px 30px rgba(2,24,45,.04);
+      transition:var(--transition);
+    }
+    article.chapter + article.chapter{margin-top:18px}
+
+    .chapter h2{font-family:var(--font-serif);margin:0 0 8px 0;color:var(--accent)}
+    .meta{font-size:13px;color:var(--muted);margin-bottom:10px}
+
+    /* paragraph style */
+    .chapter p{
+      font-size:var(--font-size-base);
+      line-height:var(--line-height);
+      margin:0 0 12px 0;
+      color: #0f2f3b;
+      text-align:justify;
+    }
+
+    /* drop cap for first paragraph */
+    .chapter p:first-of-type::first-letter{
+      float:left;font-family:var(--font-serif);
+      font-size:48px;line-height:1;margin-right:10px;color:var(--accent);
+      font-weight:700;opacity:0.95;
+    }
+
+    /* reading footer controls */
+    .reader-footer{
+      position:fixed;left:0;right:0;bottom:0;
+      display:flex;justify-content:center;
+      padding:12px;backdrop-filter: blur(6px);
+      z-index:20;
+      pointer-events:auto;
+    }
+    .reader-footer .panel{
+      background:linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.95));
+      border-radius:14px;padding:8px 12px;display:flex;gap:8px;align-items:center;
+      width:calc(100% - 40px);max-width:760px;
+      box-shadow:0 10px 30px rgba(2,24,45,.06);
+    }
+
+    .small{font-size:13px;color:var(--muted)}
+    .slider{width:120px}
+
+    /* progress */
+    .progress-wrap{height:6px;background:rgba(0,0,0,0.06);border-radius:6px;overflow:hidden}
+    .progress{height:100%;background:linear-gradient(90deg,var(--accent),#5cc7ff);width:0%}
+
+    /* chapter-specific moods (bg accents & wave shapes) */
+    /* Each chapter assigns a data-chapter attribute that CSS picks up through a parent .mood-# class on .reader */
+    .mood-1 .chapter{border-left:4px solid #2a9bd1}
+    .mood-2 .chapter{border-left:4px solid #0d6b99}
+    .mood-3 .chapter{border-left:4px solid #3fb4d6}
+    .mood-4 .chapter{border-left:4px solid #0a567a}
+    .mood-5 .chapter{border-left:4px solid #6fd3ff}
+
+    /* mobile niceties */
+    @media (max-width:480px){
+      :root{--font-size-base:17px; --safe-pad:14px}
+      .logo{width:46px;height:46px}
+      .brand .title{font-size:14px}
+      .chapter{padding:14px}
+    }
+
+    /* nav bottom fixed buttons */
+    .float-nav{
+      position:fixed;right:16px;bottom:92px;z-index:40;display:flex;flex-direction:column;gap:10px;
+    }
+    .float-btn{width:52px;height:52px;border-radius:12px;background:var(--card);display:grid;place-items:center;box-shadow:0 14px 35px rgba(2,24,45,.06);color:var(--accent);font-weight:700}
+
+    /* TOC drawer */
+    .drawer{
+      position:fixed;left:12px;top:12px;z-index:50;
+    }
+    .toc{
+      background:linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.9));
+      border-radius:12px;padding:10px;box-shadow:0 10px 30px rgba(2,24,45,.07);
+      max-height:70vh;overflow:auto;
+    }
+    .toc h3{margin:0 0 8px 0;font-size:14px;color:var(--accent)}
+    .toc button{display:block;width:100%;text-align:left;padding:8px;border-radius:8px;border:none;background:transparent;color:#113744}
+    .toc button:hover{background:rgba(11,111,166,0.06)}
+
+    /* reading mode */
+    .fullscreen {position:fixed;inset:0;z-index:100;background:var(--card);display:flex;align-items:center;justify-content:center}
+    .hidden{display:none}
+  </style>
+</head>
+<body>
+  <div class="app" id="app">
+
+    <header class="app-header" role="banner">
+      <div class="brand">
+        <div class="logo">YS</div>
+        <div>
+          <div class="title">Penyamaran Sang Pendosa</div>
+          <div class="subtitle">Light novel — Yarlt • Author: Roffi</div>
+        </div>
+      </div>
+
+      <div class="controls" aria-hidden="false">
+        <button class="btn" id="btn-toc" title="Daftar Isi">Daftar Isi</button>
+        <button class="btn" id="btn-font" title="Ubah Ukuran Font">A+</button>
+      </div>
+    </header>
+
+    <main class="reader mood-1" id="reader" role="main" aria-live="polite">
+      <!-- decorative waves — subtle -->
+      <svg class="bg-wave" viewBox="0 0 800 600" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="g1" x1="0" x2="1">
+            <stop offset="0" stop-color="#bfefff"/>
+            <stop offset="1" stop-color="#f1fcff"/>
+          </linearGradient>
+        </defs>
+        <rect width="800" height="600" fill="url(#g1)" opacity="0.7"/>
+        <path d="M0,420 C120,360 240,480 400,420 C560,360 680,480 800,420 L800,600 L0,600 Z" fill="#bfefff" opacity="0.16"></path>
+        <path d="M0,480 C180,420 320,560 480,480 C640,400 760,520 800,480 L800,600 L0,600 Z" fill="#9fe6ff" opacity="0.08"></path>
+      </svg>
+
+      <div class="content" id="content">
+        <h1 class="book-title">Penyamaran Sang Pendosa</h1>
+        <p class="lead">Sebuah kisah tentang pengorbanan, penipuan yang bermaksud baik, dan laut yang menelan kebenaran.</p>
+
+        <!-- Chapters -->
+        <article class="chapter" id="prolog" data-chapter="1">
+          <h2>Prolog — Langit yang Pecah</h2>
+          <p>
+            Di awal, alam semesta itu kosong dan tajam seperti bilah. Hanya Fisika & sihir yang berjalan: hukum-hukum sunyi yang menuntun makhluk-makhluk aneh melintas tanpa rumah. Dari balik ketiadaan itu turun lima musāfir—lima perempuan yang datang dari jauh, tubuh mereka membawa bekas perang dan mata mereka menyimpan pelarian.
+          </p>
+          <p>
+            Mereka menemukan Yarlt, planet di mana hidup diatur bukan oleh matahari semata, melainkan oleh sepuluh Naga Primordial: penjaga arus, penjaga keseimbangan. Musāfir itu bertempur—bukan karena ingin menaklukkan, melainkan karena mengejar satu tujuan yang sederhana dan kejam: bertahan hidup.
+          </p>
+          <p>
+            Pertempuran tidak masuk akal. Tanduk-tanduk energi menerjang, lautan meledak; siang dan malam hancur menjadi retak-retak cahaya. Ketika debu mereda, langit aslinya sudah punah: retakan yang tak bisa dijahit kembali. Kelima musāfir menambal lubang itu dengan langit palsu, menutup planet dari mata luar, dan menancapkan diri mereka sebagai penguasa. Dunia diberi topeng agar kehidupan dapat berjalan.
+          </p>
+          <p>
+            Begitulah Yarlt menjadi sebuah kerajaan bertingkat, di mana manusia menyembah mereka yang turun dari bintang: para Holy Leader.
+          </p>
+        </article>
+
+        <article class="chapter" id="bab1" data-chapter="2">
+          <h2>Bab 1 — Benua Air</h2>
+          <p>
+            Benua Air dulu kacau. Ombak memuntahkan puing, arus berubah seperti gergaji. Dihuni oleh makhluk yang menolak daratan, mereka dikenal karena kelimpahan dan juga kerentanannya: wabah datang cepat seperti arus pasang, memakan kaum muda dan tua tanpa pandang.
+          </p>
+          <p>
+            Thessa, Dewi Badai dari benua lain, melihat kehancuran itu dan menolong. Ia melahirkan seorang anak, menaruhnya di benua air dan menyebutnya Mira. Di mata rakyat, Mira adalah penyelamat: lembut, tangguh, dan mampu menjinakkan badai sampai ombak bersenandung seperti sebelum perang. Ia diberi gelar Dewi Air—meski sebenarnya ia adalah peran yang diletakkan di bahunya oleh dewi lain.
+          </p>
+          <p>
+            Untuk menstabilkan populasi, Mira membuat perjanjian dengan peradaban naga kuno yang tersisa—peradaban yang menyimpan sisa-sisa pengetahuan lama dan kemampuan memanipulasi air. Mereka memberi Mira sesuatu yang disebut Air Suci: cairan yang mampu mengubah, menyesuaikan, dan membentuk tubuh manusia agar tahan hidup di laut asin. Dengan Air Suci, Mira mencipta manusia baru—bukan dari rahim darat, melainkan dari respirasi air dan lendir laut—dan Benua Air perlahan hidup kembali.
+          </p>
+        </article>
+
+        <article class="chapter" id="bab2" data-chapter="3">
+          <h2>Bab 2 — Ramalan yang Dijahit</h2>
+          <p>
+            Peradaban naga kuno itu bernama Aldhren. Di dalamnya ada seorang pemimpin yang tak sabar pada kebangkitan Benua Air. Namanya Kyr. Dari awal ia menaruh curiga: Air Suci merekayasa kehidupan; manusia-manusia buatan itu bukan alamiah; suatu hari ramalan leluhur bisa menjadi realita—benua itu akan tenggelam bukan karena alam semata, melainkan karena keseimbangan yang rusak.
+          </p>
+          <p>
+            Kyr menunggu. Ia menunggu selama lima abad. Di balik ritual-ritual tenangnya, ia menyimpan botol-botol kegelapan: Air Asal—cairan kuno, pekat, yang membalik sifat Air Suci. Dimaksudkan untuk mengembalikan ‘kebenaran leluhur’. Bukan kebenaran yang baik—melainkan kebenaran yang menuntut pembersihan radikal.
+          </p>
+          <p>
+            Saat ia melepaskannya, efeknya cepat: Air Suci yang sejatinya menstabilkan malah menjadi racun. Wabah kembali, kali ini lebih dingin, memakan bukan hanya tubuh tapi memudarkan ingatan. Masyarakat yang tadinya dibuat kuat menjadi rapuh; keluarga hancur; bayi-bayi yang lahir pudar seperti bulan tertutup awan.
+          </p>
+          <p>
+            Mira mengetahui. Ia tahu ia mengambil jalan berbahaya ketika ia mengizinkan ciptaannya hidup — namun apa lagi yang bisa dilakukan selain menjaga yang tersisa? Ia tidak memberi tahu rakyat bahwa ia tahu ramalan itu, karena bagaimana menjelaskan kepada orang yang menjulukinya Bunda bahwa ia sendiri orang yang membiarkan ciptaan buatan ada?
+          </p>
+        </article>
+
+        <article class="chapter" id="bab3" data-chapter="4">
+          <h2>Bab 3 — Hakim dan Pengorbanan</h2>
+          <p>
+            Vahrin adalah naga yang dulu kuat—salah satu dari sepuluh Penjaga Arus. Ia kalah dalam perang besar saat lima musāfir menaklukkan Primordial, kekuatannya diserang dan ditawan dalam bentuk yang lebih kecil: wujud manusia yang bisa menilai dan memutuskan. Setelah itu, Vahrin mengadopsi peran Hakim: ia mengurus hukum dan adat benua air, meletakkan tatacara ketika dewi tak sanggup menetapkan semuanya.
+          </p>
+          <p>
+            Ketika ia mengetahui ukuran ancaman, ia tak hanya marah pada Kyr: ia merasa bersalah. Bagian dari kekuatan naga itu direbut; bagian lain ia pinjamkan pada Mira. Mereka menjadi rekan yang tak pernah bisa saling mengungkapkan rasa bersalahnya. Ketika Mira memutuskan untuk menebus kesalahannya dengan melawan wabah menggunakan Air Suci secara total—menyaring, membersihkan, dan memurnikan seluruh lautan—Vahrin tahu konsekuensinya.
+          </p>
+          <p>
+            Dewi memilih bertarung seorang diri. Ia menenggelamkan dirinya dalam lingkaran kuno, membuka dirinya menjadi penerima energi peradaban kuno yang hancur. Air Asal dan Air Suci bertemu di dalam dirinya. Ia menyerap, menyaring, dan membakar. Gelombang bergulung, namun bukan tsunami yang menghancurkan; ini pembersihan yang mahal.
+          </p>
+          <p>
+            Mira mati saat fajar. Tubuhnya hanyut, namun tak seperti mayat: cahaya lembut meresap ke dalam air lalu lenyap. Rakyat menangis. Mereka tidak tahu seluruh kebenaran. Mereka menyalahkan takdir, bukan peran yang diletakkan di atas bahu sang dewi.
+          </p>
+        </article>
+
+        <article class="chapter" id="bab4" data-chapter="5">
+          <h2>Bab 4 — Penyamaran</h2>
+          <p>
+            Di sebuah panti kecil yang masih bertahan dari wabah, Vahrin menemukan Ari, seorang anak yang matanya menatap dunia seperti menanyakan sebab ia dilahirkan. Vahrin memilih Ari bukan karena wajahnya mirip Mira—anak itu bahkan tak pernah mengenal nama dewi—melainkan karena ketiadaan rasa bersalah di matanya; itu lebih mudah dibentuk.
+          </p>
+          <p>
+            Dengan ritual yang ia pelajari ketika ia masih naga, Vahrin memaksimalkan sisa energi Mira untuk memodifikasi tubuh Ari sedikit demi sedikit: mengubah nada suaranya, mengecat ingatannya, menanamkan fragmen ritual. Ari menjadi tiruan Mira—bukan salinan sempurna, melainkan boneka yang bergerak dengan memori yang disusun oleh Hakim.
+          </p>
+          <p>
+            Rakyat menyambutnya. Mereka memanggilnya Dewi baru, menyusun bunga di pelataran, menyanyikan lagu-lagu yang dulu dialamatkan pada Mira. Ari menampilkan semua itu; ia belajar untuk tersenyum, untuk mengangkat tangan, untuk mengucapkan doa-doa yang sudah dihafal. Di balik topeng senyum, ada kekosongan yang makin lama makin tebal.
+          </p>
+          <p>
+            Vahrin menjaga dari balik tabir. Ia menegakkan hukum, menengahi klaim, dan dalam diamnya menabur rasa bersalah setiap kali ia melihat Ari tidur. Ia tahu tindakan ini adalah penipuan—namun ia juga tahu satu fakta yang lebih suram: tanpa topeng itu, chaos akan kembali. Tanpa Ari, Benua Air bisa runtuh kembali dalam kekosongan yang memilih indahnya kehancuran daripada kebohongan.
+          </p>
+        </article>
+
+        <article class="chapter" id="epilog" data-chapter="1">
+          <h2>Epilog — Dosa yang Disamarkan</h2>
+          <p>
+            Waktu berjalan. Anak-anak yang lahir setelah pengorbanan Mira tumbuh mengetahui hanya satu kebenaran: ada Dewi di pelataran, ada Hakim di balai, dan ada langit yang tidak pernah berubah. Mereka belajar doa, bukan sejarah. Mereka membangun rumah di tepi laut yang kini aman—aman oleh pengorbanan, aman oleh sandiwara.
+          </p>
+          <p>
+            Di kamar kecil yang disiapkan khusus, Ari duduk memandangi cermin. Di sana, bayangannya menatap balik: ada bekas garis ritual di kulitnya, ada suara yang bukan suaranya sendiri berbisik ketika ia melafalkan doa. Setiap kali ia belajar tersenyum, Vahrin meneteskan air mata seperti manusia—dia yang dahulunya naga.
+          </p>
+          <p>
+            Di balik permukaan kota, di ruang sunyi yang hanya diakses oleh Hakim, Vahrin meletakkan kembali sisa cahaya Mira ke dalam sebuah patung kecil dari batu laut. Ia menutupnya, membungkuk, lalu menuliskan nama yang tak ada seorang pun lagi yang mengingat: Mira.
+          </p>
+          <p>
+            Dunia itu tetap berdiri. Langitnya masih palsu. Rakyatnya tetap berdoa pada figur yang mereka kenal. Dan di balik tirai aman itu, dosa generasi lama disamarkan menjadi sebuah kepemimpinan. Penyamaran itu pantas dianggap dosa, pantas juga dianggap pengorbanan—tergantung siapa yang menilai, dan dari mana mereka melihat.
+          </p>
+        </article>
+
+      </div>
+    </main>
+
+    <!-- floating navigation -->
+    <div class="float-nav" aria-hidden="false">
+      <button class="float-btn" id="prevBtn" title="Sebelumnya">‹</button>
+      <button class="float-btn" id="nextBtn" title="Berikutnya">›</button>
+    </div>
+
+    <!-- reader footer -->
+    <div class="reader-footer" aria-hidden="false">
+      <div class="panel">
+        <div style="flex:1">
+          <div class="small">Progres baca</div>
+          <div class="progress-wrap" style="margin-top:6px"><div class="progress" id="readingProgress"></div></div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:8px;margin-left:12px">
+          <div class="small">Ukuran</div>
+          <input id="fontRange" class="slider" type="range" min="14" max="22" value="18" />
+          <button class="btn ghost" id="readMode">Baca</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOC Drawer -->
+    <div class="drawer hidden" id="drawer">
+      <div class="toc" role="navigation" aria-label="Daftar isi">
+        <h3>Daftar Isi</h3>
+        <button data-target="prolog">Prolog — Langit yang Pecah</button>
+        <button data-target="bab1">Bab 1 — Benua Air</button>
+        <button data-target="bab2">Bab 2 — Ramalan yang Dijahit</button>
+        <button data-target="bab3">Bab 3 — Hakim dan Pengorbanan</button>
+        <button data-target="bab4">Bab 4 — Penyamaran</button>
+        <button data-target="epilog">Epilog — Dosa yang Disamarkan</button>
+        <div style="height:10px"></div>
+        <button id="tocClose" class="btn ghost">Tutup</button>
+      </div>
+    </div>
+
+  </div>
+
+
+
+<script>
+  // Basic UI interactions: TOC, navigation, font size, progress, chapter moods
+  (function(){
+    const app = document.getElementById('app');
+    const reader = document.getElementById('reader');
+    const drawer = document.getElementById('drawer');
+    const btnToc = document.getElementById('btn-toc');
+    const tocClose = document.getElementById('tocClose');
+    const fontRange = document.getElementById('fontRange');
+    const content = document.getElementById('content');
+    const chapters = Array.from(content.querySelectorAll('.chapter'));
+    const progressEl = document.getElementById('readingProgress');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const btnFont = document.getElementById('btn-font');
+    const btnRead = document.getElementById('readMode');
+
+    // Map chapter order by DOM order
+    const order = chapters.map(c => c.id);
+    let currentIndex = 0;
+
+    // Set moods per chapter (folder-like)
+    const moodFor = {
+      "prolog": "mood-1",
+      "bab1": "mood-2",
+      "bab2": "mood-3",
+      "bab3": "mood-4",
+      "bab4": "mood-5",
+      "epilog":"mood-1"
+    };
+
+    // TOC toggle
+    btnToc.addEventListener('click', () => {
+      drawer.classList.toggle('hidden');
+    });
+    tocClose.addEventListener('click', ()=> drawer.classList.add('hidden'));
+
+    // TOC buttons
+    drawer.querySelectorAll('button[data-target]').forEach(btn=>{
+      btn.addEventListener('click', e=>{
+        const id = e.currentTarget.dataset.target;
+        scrollToChapter(id);
+        drawer.classList.add('hidden');
+      });
+    });
+
+    // Font size control
+    fontRange.addEventListener('input', e=>{
+      document.documentElement.style.setProperty('--font-size-base', e.target.value + 'px');
+      btnFont.textContent = e.target.value + 'px';
+    });
+
+    // Quick font button (toggle)
+    let savedFont = 18;
+    btnFont.addEventListener('click', ()=>{
+      const current = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--font-size-base')) || 18;
+      savedFont = current;
+      const next = (current >= 20) ? 16 : current + 2;
+      document.documentElement.style.setProperty('--font-size-base', next + 'px');
+      fontRange.value = next;
+      btnFont.textContent = next + 'px';
+    });
+
+    // Read mode (fullscreen-ish)
+    btnRead.addEventListener('click', ()=>{
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen && document.documentElement.requestFullscreen().catch(()=>{});
+        btnRead.textContent = 'Exit';
+      } else {
+        document.exitFullscreen && document.exitFullscreen();
+        btnRead.textContent = 'Baca';
+      }
+    });
+
+    // Scroll to chapter
+    function scrollToChapter(id){
+      const el = document.getElementById(id);
+      if(!el) return;
+      // Update mood class
+      reader.className = 'reader ' + (moodFor[id] || 'mood-1');
+      // smooth scroll into view inside the reader's scroll container
+      el.scrollIntoView({behavior:'smooth',block:'start'});
+      currentIndex = order.indexOf(id);
+      updateProgress();
+    }
+
+    // Prev / Next
+    prevBtn.addEventListener('click', ()=>{
+      currentIndex = Math.max(0, currentIndex - 1);
+      scrollToChapter(order[currentIndex]);
+    });
+    nextBtn.addEventListener('click', ()=>{
+      currentIndex = Math.min(order.length - 1, currentIndex + 1);
+      scrollToChapter(order[currentIndex]);
+    });
+
+    // Update reading progress based on scroll in content area
+    function updateProgress(){
+      const top = content.scrollTop || window.pageYOffset || document.documentElement.scrollTop;
+      // find first visible chapter
+      let idx = 0;
+      for (let i=0;i<chapters.length;i++){
+        const r = chapters[i].getBoundingClientRect();
+        if (r.top >= 80) { idx = Math.max(0,i-1); break; }
+        if (i === chapters.length - 1) idx = i;
+      }
+      const percent = Math.round(((idx) / (chapters.length - 1)) * 100);
+      progressEl.style.width = percent + '%';
+    }
+
+    // Also update progress on scroll events
+    document.addEventListener('scroll', throttle(updateProgress, 120), {passive:true});
+    content.addEventListener('scroll', throttle(updateProgress, 120), {passive:true});
+
+    // initial
+    scrollToChapter(order[0]);
+
+    // Helper: throttle
+    function throttle(fn, wait){
+      let last = 0;
+      return function(...args){
+        const now = Date.now();
+        if (now - last > wait) { last = now; fn.apply(this, args); }
+      }
+    }
+
+    // Accessibility: keyboard nav (left/right) - mostly for desktop testing
+    document.addEventListener('keydown', e=>{
+      if(e.key === 'ArrowRight') nextBtn.click();
+      if(e.key === 'ArrowLeft') prevBtn.click();
+      if(e.key === 't') btnToc.click();
+    });
+
+    // Small UX: clicking chapter title scrolls to that chapter top (useful on small screens)
+    chapters.forEach((ch, idx) => {
+      ch.querySelectorAll('h2').forEach(h => {
+        h.addEventListener('click', ()=> {
+          currentIndex = idx;
+          scrollToChapter(ch.id);
+        });
+      });
+    });
+
+    // If user lands with hash (#bab3), open that chapter
+    if(location.hash){
+      const id = location.hash.replace('#','');
+      if(document.getElementById(id)) { setTimeout(()=>scrollToChapter(id), 200); }
+    }
+
+  })();
+</script>
+</body>
+</html>
